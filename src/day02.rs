@@ -1,4 +1,4 @@
-use crate::file_util::parse_lines;
+use crate::file_util::read_to_vec;
 use anyhow::Error;
 use std::fs::File;
 use std::str::FromStr;
@@ -27,7 +27,7 @@ enum Direction {
 pub fn part1() -> Result<(), Error> {
     let mut depth = 0;
     let mut horizontal = 0;
-    for dir in parse_lines(File::open("./inputs/day02.txt")?)? {
+    for dir in read_to_vec("./inputs/day02.txt")? {
         use Direction::*;
         match dir {
             Forward(x) => horizontal += x,
@@ -43,7 +43,7 @@ pub fn part2() -> Result<(), Error> {
     let mut depth = 0;
     let mut horizontal = 0;
     let mut aim = 0;
-    for dir in parse_lines(File::open("./inputs/day02.txt")?)? {
+    for dir in read_to_vec("./inputs/day02.txt")? {
         use Direction::*;
         match dir {
             Forward(x) => {
