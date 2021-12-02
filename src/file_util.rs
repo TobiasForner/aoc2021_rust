@@ -1,16 +1,7 @@
 use anyhow::Result;
-use std::fs::File;
-use std::io::{self, BufRead, BufReader, Read};
-use std::path::Path;
-use std::str::FromStr;
+use std::io::{BufRead, BufReader, Read};
 
-pub fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
-where
-    P: AsRef<Path>,
-{
-    let file = File::open(filename)?;
-    Ok(io::BufReader::new(file).lines())
-}
+use std::str::FromStr;
 
 pub fn parse_lines<T: FromStr, R: Read>(io: R) -> Result<Vec<T>>
 where
