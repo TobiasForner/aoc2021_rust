@@ -11,5 +11,6 @@ fn main() -> Result<(), Error> {
     //day02::part1()?;
     //day02::part2()?;
     day03::part1()?;
+    day03::part2()?;
     Ok(())
 }
