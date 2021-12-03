@@ -43,23 +43,14 @@ fn oxygen_gen_rating(vec: Vec<String>, pos: usize) -> u32 {
     if vec_len == 1 {
         return u32::from_str_radix(&vec[0][..], 2).unwrap();
     }
-    let mut one_counts = 0;
-    for s in &vec {
-        let s_chars: Vec<char> = s.chars().collect();
-        if s_chars[pos] == '1' {
-            one_counts += 1;
-        }
-    }
-    let mut filter_char = '0';
-    let boundary: f32 = vec_len as f32 / 2 as f32;
-    if one_counts as f32 >= boundary {
-        filter_char = '1';
-    }
-    let filtered_vec: Vec<String> = vec
+    let (one_at_pos, zero_at_pos): (_, Vec<String>) = vec
         .into_iter()
-        .filter(|x| x.chars().collect::<Vec<char>>()[pos] == filter_char)
-        .collect();
-    return oxygen_gen_rating(filtered_vec, pos + 1);
+        .partition(|x| x.chars().collect::<Vec<char>>()[pos] == '1');
+    if one_at_pos.len() >= zero_at_pos.len() {
+        return oxygen_gen_rating(one_at_pos, pos + 1);
+    } else {
+        return oxygen_gen_rating(zero_at_pos, pos + 1);
+    }
 }
 
 fn scrubber_rating(vec: Vec<String>, pos: usize) -> u32 {
@@ -67,23 +58,14 @@ fn scrubber_rating(vec: Vec<String>, pos: usize) -> u32 {
     if vec_len == 1 {
         return u32::from_str_radix(&vec[0][..], 2).unwrap();
     }
-    let mut one_counts = 0;
-    for s in &vec {
-        let s_chars: Vec<char> = s.chars().collect();
-        if s_chars[pos] == '1' {
-            one_counts += 1;
-        }
-    }
-    let mut filter_char = '0';
-    let boundary: f32 = vec_len as f32 / 2 as f32;
-    if boundary > one_counts as f32 {
-        filter_char = '1';
-    }
-    let filtered_vec: Vec<String> = vec
+    let (one_at_pos, zero_at_pos): (_, Vec<String>) = vec
         .into_iter()
-        .filter(|x| x.chars().collect::<Vec<char>>()[pos] == filter_char)
-        .collect();
-    return scrubber_rating(filtered_vec, pos + 1);
+        .partition(|x| x.chars().collect::<Vec<char>>()[pos] == '1');
+    if one_at_pos.len() < zero_at_pos.len() {
+        return scrubber_rating(one_at_pos, pos + 1);
+    } else {
+        return scrubber_rating(zero_at_pos, pos + 1);
+    }
 }
 
 #[cfg(test)]
