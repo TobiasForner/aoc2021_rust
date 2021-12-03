@@ -3,15 +3,10 @@ use anyhow::Result;
 use itertools::Itertools;
 
 pub fn part1() -> Result<()> {
-    let mut count: u32 = 0;
-    let ints = read_to_vec("./inputs/day01.txt")?;
-    let mut last: u32 = u32::MAX;
-    for my_int in ints {
-        if my_int > last {
-            count += 1;
-        }
-        last = my_int;
-    }
+    let count = read_to_vec::<u32>("./inputs/day01.txt")?
+        .windows(2)
+        .filter(|t| t[1] > t[0])
+        .count();
     print_result!(1, 1, count);
 }
 
