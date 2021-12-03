@@ -1,6 +1,6 @@
 mod day01;
 mod day02;
-mod file_util;
+mod util;
 
 use anyhow::{Error, Result};
 

@@ -18,3 +18,11 @@ where
     let br = BufReader::new(io);
     br.lines().map(|line| Ok(line?.parse()?)).collect()
 }
+
+#[macro_export]
+macro_rules! print_result {
+    ($day: expr, $part: expr, $result: expr) => {
+        println!("Day {} Part {}: {}", $day, $part, $result);
+        return Ok(());
+    };
+}

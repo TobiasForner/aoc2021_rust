@@ -1,7 +1,6 @@
-use crate::file_util::read_to_vec;
+use crate::{print_result, util::read_to_vec};
 use anyhow::Result;
 use itertools::Itertools;
-use std::fs::File;
 
 pub fn part1() -> Result<()> {
     let mut count: u32 = 0;
@@ -13,8 +12,7 @@ pub fn part1() -> Result<()> {
         }
         last = my_int;
     }
-    println!("Part 1: {}", count);
-    Ok(())
+    print_result!(1, 1, count);
 }
 
 pub fn part2() -> Result<()> {
@@ -30,6 +28,5 @@ pub fn part2() -> Result<()> {
         }
         last = value;
     }
-    println!("Part 2: {}", count);
-    Ok(())
+    print_result!(1, 2, count);
 }

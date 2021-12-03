@@ -1,6 +1,5 @@
-use crate::file_util::read_to_vec;
+use crate::{print_result, util::read_to_vec};
 use anyhow::Error;
-use std::fs::File;
 use std::str::FromStr;
 
 impl FromStr for Direction {
@@ -35,8 +34,7 @@ pub fn part1() -> Result<(), Error> {
             Down(x) => depth += x,
         }
     }
-    println!("Day 2 Part 1: {}", depth * horizontal);
-    Ok(())
+    print_result!(2, 1, depth * horizontal);
 }
 
 pub fn part2() -> Result<(), Error> {
@@ -54,6 +52,5 @@ pub fn part2() -> Result<(), Error> {
             Down(x) => aim += x,
         }
     }
-    println!("Day 2 Part 2: {}", depth * horizontal);
-    Ok(())
+    print_result!(2, 2, depth * horizontal);
 }
