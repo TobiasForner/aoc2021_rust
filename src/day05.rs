@@ -119,7 +119,7 @@ impl Edge {
             }
         }
     }
-    pub fn intersection(&self, other: &Self, allow_diag: bool) -> HashSet<Point> {
+    pub fn intersection(&self, other: &Self, allow_diag: bool) -> Result<HashSet<Point>> {
         use EdgeType::*;
         let mut result = HashSet::new();
         let start = self.start;
@@ -194,17 +194,8 @@ impl Edge {
                         /*
                         m_1 x+t_1=m_2 x+t_2 =>(m_1-m_2)x=t_2 - t_1=> x= (t_2-t_1)/(m_1-m_2)
                         */
-                        let mut m1 = 1;
-                        if start.y > end.y {
-                            m1 = -1;
-                        }
-                        let t1 = start.y - m1 * start.x;
-
-                        let mut m2 = 1;
-                        if start2.y > end2.y {
-                            m2 = -1;
-                        }
-                        let t2 = start2.y - m2 * start2.x;
+                        let (m1, t1) = self.compute_diag_parameters()?;
+                        let (m2, t2) = other.compute_diag_parameters()?;
                         if m1 != m2 {
                             let x = (t2 - t1) / (m1 - m2);
                             let y = m1 * x + t1;
@@ -226,11 +217,24 @@ impl Edge {
             }
             _ => return other.intersection(self, allow_diag),
         }
-        return result;
+        return Ok(result);
+    }
+    fn compute_diag_parameters(&self) -> Result<(i32, i32)> {
+        match self.typ {
+            EdgeType::Diagonal => {
+                let mut m = 1;
+                if self.start.y > self.end.y {
+                    m = -1;
+                }
+                let t = self.start.y - m * self.start.x;
+                Ok((m, t))
+            }
+            _ => Err(Error::msg("Non-diagonal has no parameters!")),
+        }
     }
 }
 
-pub fn unique_intersections(edges: Vec<Edge>, include_diagonals: bool) -> usize {
+pub fn unique_intersections(edges: Vec<Edge>, include_diagonals: bool) -> Result<usize> {
     let instant = Instant::now();
     let mut points: HashSet<Point> = HashSet::new();
 
@@ -238,27 +242,28 @@ pub fn unique_intersections(edges: Vec<Edge>, include_diagonals: bool) -> usize 
         for j in (i + 1)..edges.len() {
             let intersections = edges[i].intersection(&edges[j], include_diagonals);
 
-            points.extend(intersections);
+            points.extend(intersections?);
         }
     }
     println!("finished in {} ms", instant.elapsed().as_millis());
-    return points.len();
+    return Ok(points.len());
 }
 
 pub fn part1() -> Result<(), Error> {
     let edges: Vec<Edge> = read_to_vec("inputs/day05.txt")?;
-    print_result!(5, 1, unique_intersections(edges, false));
+    print_result!(5, 1, unique_intersections(edges, false)?);
 }
 
 pub fn part2() -> Result<(), Error> {
     let edges: Vec<Edge> = read_to_vec("inputs/day05.txt")?;
-    print_result!(5, 2, unique_intersections(edges, true));
+    print_result!(5, 2, unique_intersections(edges, true)?);
 }
 
 #[test]
-fn test_with_diagonals() {
+fn test_with_diagonals() -> Result<()> {
     if let Ok(input_vec) = read_to_vec("./inputs/day05_test.txt") {
-        let res = unique_intersections(input_vec, true);
+        let res = unique_intersections(input_vec, true)?;
         assert_eq!(res, 12);
     }
+    Ok(())
 }

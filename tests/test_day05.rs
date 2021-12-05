@@ -1,26 +1,34 @@
+use anyhow::Result;
 use aoc2021_rust::day05::{unique_intersections, Edge, EdgeType, Point};
 use aoc2021_rust::util::read_to_vec;
 
 #[test]
-fn test_no_diagonals() {
+fn test_no_diagonals() -> Result<()> {
     if let Ok(input_vec) = read_to_vec("./inputs/day05_test.txt") {
-        let res = unique_intersections(input_vec, false);
+        let res = unique_intersections(input_vec, false)?;
         assert_eq!(res, 5);
     }
     if let Ok(input_vec) = read_to_vec("./inputs/day05.txt") {
-        let res = unique_intersections(input_vec, false);
+        let res = unique_intersections(input_vec, false)?;
         assert_eq!(res, 6572);
     }
+    Ok(())
 }
 #[test]
-fn test_with_diagonals() {
+fn test_with_diagonals() -> Result<()> {
     if let Ok(input_vec) = read_to_vec("./inputs/day05_test.txt") {
-        let res = unique_intersections(input_vec, true);
+        let res = unique_intersections(input_vec, true)?;
         assert_eq!(res, 12);
     }
+    if let Ok(input_vec) = read_to_vec("./inputs/day05.txt") {
+        let res = unique_intersections(input_vec, true)?;
+        assert_eq!(res, 21466);
+    }
+    Ok(())
 }
+
 #[test]
-fn test_edge_intersections() {
+fn test_edge_intersections() -> Result<()> {
     use EdgeType::*;
     let horizontal = Edge {
         start: Point { x: 3, y: 3 },
@@ -32,9 +40,9 @@ fn test_edge_intersections() {
         end: Point { x: 5, y: 5 },
         typ: Diagonal,
     };
-    let res = horizontal.intersection(&diag, true).len();
+    let res = horizontal.intersection(&diag, true)?.len();
     assert_eq!(res, 1);
-    let res = diag.intersection(&horizontal, true).len();
+    let res = diag.intersection(&horizontal, true)?.len();
     assert_eq!(res, 1);
 
     let diag = Edge {
@@ -42,9 +50,9 @@ fn test_edge_intersections() {
         end: Point { x: 5, y: 5 },
         typ: Diagonal,
     };
-    let res = horizontal.intersection(&diag, true);
+    let res = horizontal.intersection(&diag, true)?;
     assert_eq!(res.len(), 1);
-    let res = diag.intersection(&horizontal, true).len();
+    let res = diag.intersection(&horizontal, true)?.len();
     assert_eq!(res, 1);
 
     let diag = Edge {
@@ -52,12 +60,12 @@ fn test_edge_intersections() {
         end: Point { x: 3, y: 3 },
         typ: Diagonal,
     };
-    let res = horizontal.intersection(&diag, true).len();
+    let res = horizontal.intersection(&diag, true)?.len();
     assert_eq!(res, 1);
-    let res = diag.intersection(&horizontal, true).len();
+    let res = diag.intersection(&horizontal, true)?.len();
     assert_eq!(res, 1);
 
-    let res = diag.intersection(&horizontal, true).len();
+    let res = diag.intersection(&horizontal, true)?.len();
     assert_eq!(res, 1);
 
     /*let vertical = Edge::Horizontal(Point { x: 3, y: 3 }, Point { x: 6, y: 3 });
@@ -82,4 +90,5 @@ fn test_edge_intersections() {
     let diag2 = Edge::Diagonal(Point { x: 1, y: 3 }, Point { x: 3, y: 1 });
     let res = diag1.intersection(&diag2, true).len();
     assert_eq!(res, 1);*/
+    Ok(())
 }
