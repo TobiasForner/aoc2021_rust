@@ -145,12 +145,8 @@ impl Edge {
             }
             (Vertical, Diagonal) => {
                 if allow_diag {
-                    let step = (start.x - start2.x).abs();
-                    let mut step_y = 1;
-                    if start2.y > end2.y {
-                        step_y = -1;
-                    }
-                    let y_cand = start2.y + step * step_y;
+                    let (m, t) = other.compute_diag_parameters()?;
+                    let y_cand = m * start.x + t;
                     let p = Point {
                         x: start.x,
                         y: y_cand,
@@ -169,12 +165,8 @@ impl Edge {
             }
             (Horizontal, Diagonal) => {
                 if allow_diag {
-                    let step = (start.y - start2.y).abs();
-                    let mut step_x = 1;
-                    if start2.x > end2.x {
-                        step_x = -1;
-                    }
-                    let x_cand = start2.x + step * step_x;
+                    let (m, t) = other.compute_diag_parameters()?;
+                    let x_cand = (start.y - t) / m;
                     let p = Point {
                         x: x_cand,
                         y: start.y,
@@ -257,13 +249,4 @@ pub fn part1() -> Result<(), Error> {
 pub fn part2() -> Result<(), Error> {
     let edges: Vec<Edge> = read_to_vec("inputs/day05.txt")?;
     print_result!(5, 2, unique_intersections(edges, true)?);
-}
-
-#[test]
-fn test_with_diagonals() -> Result<()> {
-    if let Ok(input_vec) = read_to_vec("./inputs/day05_test.txt") {
-        let res = unique_intersections(input_vec, true)?;
-        assert_eq!(res, 12);
-    }
-    Ok(())
 }
