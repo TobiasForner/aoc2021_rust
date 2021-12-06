@@ -14,7 +14,7 @@ pub fn part2() -> Result<()> {
     print_result!(6, 1, simulate(&mut state, 256)?);
 }
 
-fn parse_state(path: &str) -> Result<Vec<i64>> {
+pub fn parse_state(path: &str) -> Result<Vec<i64>> {
     let br = BufReader::new(File::open(path)?);
     let mut in_lines = br.lines();
     let input = in_lines
@@ -30,7 +30,7 @@ fn parse_state(path: &str) -> Result<Vec<i64>> {
     Ok(counts)
 }
 
-fn simulate(state: &mut Vec<i64>, turns: u32) -> Result<i64> {
+pub fn simulate(state: &mut Vec<i64>, turns: u32) -> Result<i64> {
     for _ in 0..turns {
         let zeros = state[0];
         for pos in 1..=8 {
