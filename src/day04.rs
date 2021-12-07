@@ -1,5 +1,5 @@
 use crate::print_result;
-use anyhow::Error;
+use anyhow::{Context, Error};
 use std::collections::VecDeque;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -9,13 +9,11 @@ fn parse_input(path: &str) -> Result<(Vec<u32>, Vec<Board>), Error> {
     let mut in_lines = br.lines();
     let num_seq = in_lines
         .next()
-        .ok_or_else(|| Error::msg("Expected at least one line"))??
+        .context("Expected at least one line")??
         .split(',')
         .map(|x| x.parse())
         .collect::<Result<Vec<u32>, _>>()?;
-    in_lines
-        .next()
-        .ok_or_else(|| Error::msg("Expected at least two lines"))??;
+    in_lines.next().context("Expected at least two lines")??;
     let mut boards = vec![];
     let mut current = Board::default();
     for line in in_lines {

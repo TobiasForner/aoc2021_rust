@@ -39,5 +39,5 @@ pub fn simulate(state: &mut Vec<i64>, turns: u32) -> Result<i64> {
         state[6] += zeros;
         state[8] = zeros;
     }
-    return Ok(state.iter().sum());
+    Ok(state.iter().sum())
 }
