@@ -2,7 +2,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 
 use crate::print_result;
-use anyhow::{Context, Error, Result};
+use anyhow::{Context, Result};
 use std::collections::HashMap;
 
 pub fn parse_state(path: &str) -> Result<(HashMap<usize, usize>, usize)> {
