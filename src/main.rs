@@ -23,23 +23,23 @@ struct Opts {
 }
 
 fn main() -> Result<(), Error> {
-    macro_rules! run_day {
-        ($mod_name:ident, $day:expr) => {
-            return execute_and_time($mod_name::part1, $mod_name::part2, $day)
-        };
-    }
     let opts: Opts = Opts::parse();
     let day = opts.day;
+    macro_rules! run_day {
+        ($mod_name:ident) => {
+            return execute_and_time($mod_name::part1, $mod_name::part2, day)
+        };
+    }
 
     match day {
-        1 => run_day!(day01, day),
-        2 => run_day!(day02, day),
-        3 => run_day!(day03, day),
-        4 => run_day!(day04, day),
-        5 => run_day!(day05, day),
-        6 => run_day!(day06, day),
-        7 => run_day!(day07, day),
-        _ => println!("So far there are no solutions for day: {}", opts.day),
+        1 => run_day!(day01),
+        2 => run_day!(day02),
+        3 => run_day!(day03),
+        4 => run_day!(day04),
+        5 => run_day!(day05),
+        6 => run_day!(day06),
+        7 => run_day!(day07),
+        _ => println!("So far there are no solutions for day: {}", day),
     }
     Ok(())
 }

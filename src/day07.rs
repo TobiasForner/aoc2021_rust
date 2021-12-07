@@ -33,9 +33,8 @@ pub fn part1(path: &str) -> Result<usize> {
             min_cost = cost;
         }
     }
-    Ok(min_cost)
 
-    //print_result!(7, 1, min_cost);
+    Ok(min_cost)
 }
 
 pub fn part2(path: &str) -> Result<usize> {
@@ -64,6 +63,6 @@ pub fn part2(path: &str) -> Result<usize> {
             min_cost = cost;
         }
     }
-    //print_result!(7, 2, min_cost);
+
     Ok(min_cost)
 }
