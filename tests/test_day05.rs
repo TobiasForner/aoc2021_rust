@@ -1,29 +1,17 @@
 use anyhow::Result;
-use aoc2021_rust::day05::{unique_intersections, Edge, EdgeType, Point};
-use aoc2021_rust::util::read_to_vec;
+use aoc2021_rust::day05::{part1, part2, Edge, EdgeType, Point};
 
 #[test]
-fn test_no_diagonals() -> Result<()> {
-    if let Ok(input_vec) = read_to_vec("./inputs/day05_test.txt") {
-        let res = unique_intersections(input_vec, false)?;
-        assert_eq!(res, 5);
-    }
-    if let Ok(input_vec) = read_to_vec("./inputs/day05.txt") {
-        let res = unique_intersections(input_vec, false)?;
-        assert_eq!(res, 6572);
-    }
+fn test_part1() -> Result<()> {
+    assert_eq!(part1("inputs/day05_test.txt")?, 5);
+    assert_eq!(part1("inputs/day05.txt")?, 6572);
     Ok(())
 }
+
 #[test]
-fn test_with_diagonals() -> Result<()> {
-    if let Ok(input_vec) = read_to_vec("./inputs/day05_test.txt") {
-        let res = unique_intersections(input_vec, true)?;
-        assert_eq!(res, 12);
-    }
-    if let Ok(input_vec) = read_to_vec("./inputs/day05.txt") {
-        let res = unique_intersections(input_vec, true)?;
-        assert_eq!(res, 21466);
-    }
+fn test_part2() -> Result<()> {
+    assert_eq!(part2("inputs/day05_test.txt")?, 12);
+    assert_eq!(part2("inputs/day05.txt")?, 21466);
     Ok(())
 }
 
