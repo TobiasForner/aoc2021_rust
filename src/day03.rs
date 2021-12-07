@@ -1,4 +1,4 @@
-use crate::{print_result, util::read_to_vec};
+use crate::util::read_to_vec;
 use anyhow::Result;
 use std::iter::Sum;
 use std::str::FromStr;
@@ -45,8 +45,8 @@ pub struct IntString {
     bits: Vec<usize>,
 }
 
-pub fn part1() -> Result<()> {
-    let input_vec: Vec<IntString> = read_to_vec("./inputs/day03.txt")?;
+pub fn part1(path: &str) -> Result<i32> {
+    let input_vec: Vec<IntString> = read_to_vec(path)?;
     let vec_len = input_vec.len();
     let one_counts: IntString = input_vec.into_iter().sum();
     let mut gamma = 0;
@@ -61,15 +61,15 @@ pub fn part1() -> Result<()> {
             epsilon += 1;
         }
     }
-    print_result!(3, 1, gamma * epsilon);
+    Ok(gamma * epsilon)
 }
 
-pub fn part2() -> Result<()> {
-    let input_vec: Vec<IntString> = read_to_vec("./inputs/day03.txt")?;
+pub fn part2(path: &str) -> Result<usize> {
+    let input_vec: Vec<IntString> = read_to_vec(path)?;
     let input_vec2 = input_vec.clone();
     let ox_gen_rating = oxygen_gen_rating(input_vec);
     let scrub_rating = scrubber_rating(input_vec2);
-    print_result!(3, 2, ox_gen_rating * scrub_rating);
+    Ok(ox_gen_rating * scrub_rating)
 }
 
 pub fn oxygen_gen_rating(vec: Vec<IntString>) -> usize {

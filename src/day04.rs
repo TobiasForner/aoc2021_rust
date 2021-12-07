@@ -1,18 +1,9 @@
-use crate::print_result;
-use anyhow::{Context, Error};
+use crate::util::parse_first_to_vec;
+use anyhow::{Context, Error, Result};
 use std::collections::VecDeque;
-use std::fs::File;
-use std::io::{BufRead, BufReader};
 
 fn parse_input(path: &str) -> Result<(Vec<u32>, Vec<Board>), Error> {
-    let br = BufReader::new(File::open(path)?);
-    let mut in_lines = br.lines();
-    let num_seq = in_lines
-        .next()
-        .context("Expected at least one line")??
-        .split(',')
-        .map(|x| x.parse())
-        .collect::<Result<Vec<u32>, _>>()?;
+    let (num_seq, mut in_lines) = parse_first_to_vec(path, ",")?;
     in_lines.next().context("Expected at least two lines")??;
     let mut boards = vec![];
     let mut current = Board::default();
@@ -78,8 +69,8 @@ impl Board {
     }
 }
 
-pub fn part1() -> Result<(), Error> {
-    let (num_vec, mut boards) = parse_input("inputs/day04.txt")?;
+pub fn part1(path: &str) -> Result<u32> {
+    let (num_vec, mut boards) = parse_input(path)?;
     let mut result = 0;
     'outer: for num in num_vec {
         for board in &mut boards {
@@ -90,12 +81,11 @@ pub fn part1() -> Result<(), Error> {
             }
         }
     }
-
-    print_result!(4, 1, result);
+    Ok(result)
 }
 
-pub fn part2() -> Result<(), Error> {
-    let (num_vec, boards) = parse_input("inputs/day04.txt")?;
+pub fn part2(path: &str) -> Result<u32> {
+    let (num_vec, boards) = parse_input(path)?;
     let mut result = 0;
     let mut queue: VecDeque<Board> = boards.into_iter().collect();
     let mut queue2: VecDeque<Board> = VecDeque::new();
@@ -112,5 +102,5 @@ pub fn part2() -> Result<(), Error> {
         std::mem::swap(&mut queue, &mut queue2)
     }
 
-    print_result!(4, 2, result);
+    Ok(result)
 }

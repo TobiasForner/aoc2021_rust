@@ -1,4 +1,4 @@
-use crate::{print_result, util::read_to_vec};
+use crate::util::read_to_vec;
 use anyhow::{Error, Result};
 use std::cmp::Eq;
 use std::cmp::{max, min};
@@ -241,12 +241,13 @@ pub fn unique_intersections(edges: Vec<Edge>, include_diagonals: bool) -> Result
     return Ok(points.len());
 }
 
-pub fn part1() -> Result<(), Error> {
-    let edges: Vec<Edge> = read_to_vec("inputs/day05.txt")?;
-    print_result!(5, 1, unique_intersections(edges, false)?);
+pub fn part1(path: &str) -> Result<usize> {
+    let edges: Vec<Edge> = read_to_vec(path)?;
+    //print_result!(5, 1, unique_intersections(edges, false)?);
+    unique_intersections(edges, false)
 }
 
-pub fn part2() -> Result<(), Error> {
-    let edges: Vec<Edge> = read_to_vec("inputs/day05.txt")?;
-    print_result!(5, 2, unique_intersections(edges, true)?);
+pub fn part2(path: &str) -> Result<usize> {
+    let edges: Vec<Edge> = read_to_vec(path)?;
+    unique_intersections(edges, true)
 }

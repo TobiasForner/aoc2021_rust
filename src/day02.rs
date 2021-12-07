@@ -1,5 +1,5 @@
-use crate::{print_result, util::read_to_vec};
-use anyhow::Error;
+use crate::util::read_to_vec;
+use anyhow::{Error, Result};
 use std::str::FromStr;
 
 impl FromStr for Direction {
@@ -23,10 +23,10 @@ enum Direction {
     Down(i64),
 }
 
-pub fn part1() -> Result<(), Error> {
+pub fn part1(path: &str) -> Result<i64> {
     let mut depth = 0;
     let mut horizontal = 0;
-    for dir in read_to_vec("./inputs/day02.txt")? {
+    for dir in read_to_vec(path)? {
         use Direction::*;
         match dir {
             Forward(x) => horizontal += x,
@@ -34,14 +34,14 @@ pub fn part1() -> Result<(), Error> {
             Down(x) => depth += x,
         }
     }
-    print_result!(2, 1, depth * horizontal);
+    Ok(depth * horizontal)
 }
 
-pub fn part2() -> Result<(), Error> {
+pub fn part2(path: &str) -> Result<i64> {
     let mut depth = 0;
     let mut horizontal = 0;
     let mut aim = 0;
-    for dir in read_to_vec("./inputs/day02.txt")? {
+    for dir in read_to_vec(path)? {
         use Direction::*;
         match dir {
             Forward(x) => {
@@ -52,5 +52,5 @@ pub fn part2() -> Result<(), Error> {
             Down(x) => aim += x,
         }
     }
-    print_result!(2, 2, depth * horizontal);
+    Ok(depth * horizontal)
 }

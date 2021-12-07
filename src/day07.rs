@@ -1,19 +1,9 @@
-use std::fs::File;
-use std::io::{BufRead, BufReader};
-
-use crate::print_result;
+use crate::util::parse_first_to_vec;
 use anyhow::{Context, Result};
 use std::collections::HashMap;
 
 pub fn parse_state(path: &str) -> Result<(HashMap<usize, usize>, usize)> {
-    let br = BufReader::new(File::open(path)?);
-    let mut in_lines = br.lines();
-    let input = in_lines
-        .next()
-        .context("Expected at least one line")??
-        .split(',')
-        .map(|x| x.parse())
-        .collect::<Result<Vec<usize>, _>>()?;
+    let (input, _) = parse_first_to_vec(path, ",")?;
     let mut counts: HashMap<usize, usize> = HashMap::new();
     let mut first_fuel_cost = 0;
     for x in input {
@@ -24,8 +14,8 @@ pub fn parse_state(path: &str) -> Result<(HashMap<usize, usize>, usize)> {
     Ok((counts, first_fuel_cost))
 }
 
-pub fn part1() -> Result<()> {
-    let (mut counts, first_fuel_cost) = parse_state("inputs/day07.txt")?;
+pub fn part1(path: &str) -> Result<usize> {
+    let (counts, first_fuel_cost) = parse_state(path)?;
     let mut left = 0;
     let mut right: usize = counts.values().sum::<usize>() as usize;
     let max_pos = counts.keys().max().context("Expected at least one entry")?;
@@ -33,7 +23,7 @@ pub fn part1() -> Result<()> {
     let mut min_cost = cost;
 
     for pos in 0..=*max_pos {
-        let pos_count = *counts.entry(pos).or_insert(0);
+        let pos_count = *counts.get(&pos).unwrap_or(&0);
         right -= pos_count;
         left += pos_count;
         cost += left;
@@ -43,12 +33,13 @@ pub fn part1() -> Result<()> {
             min_cost = cost;
         }
     }
+    Ok(min_cost)
 
-    print_result!(7, 1, min_cost);
+    //print_result!(7, 1, min_cost);
 }
 
-pub fn part2() -> Result<()> {
-    let (counts, _) = parse_state("inputs/day07.txt")?;
+pub fn part2(path: &str) -> Result<usize> {
+    let (counts, _) = parse_state(path)?;
     let max_pos = counts.keys().max().context("Expected at least one entry")?;
     let mut cost;
     let mut min_cost = usize::MAX;
@@ -73,5 +64,6 @@ pub fn part2() -> Result<()> {
             min_cost = cost;
         }
     }
-    print_result!(7, 2, min_cost);
+    //print_result!(7, 2, min_cost);
+    Ok(min_cost)
 }

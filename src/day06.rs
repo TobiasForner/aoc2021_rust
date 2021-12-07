@@ -1,28 +1,19 @@
-use std::fs::File;
-use std::io::{BufRead, BufReader};
+use crate::util::parse_first_to_vec;
+use anyhow::Result;
 
-use crate::print_result;
-use anyhow::{Error, Result};
-
-pub fn part1() -> Result<()> {
-    let mut state = parse_state("inputs/day06.txt")?;
-    print_result!(6, 1, simulate(&mut state, 80)?);
+pub fn part1(path: &str) -> Result<i64> {
+    let mut state = parse_state(path)?;
+    //print_result!(6, 1, simulate(&mut state, 80)?);
+    simulate(&mut state, 80)
 }
 
-pub fn part2() -> Result<()> {
-    let mut state = parse_state("inputs/day06.txt")?;
-    print_result!(6, 1, simulate(&mut state, 256)?);
+pub fn part2(path: &str) -> Result<i64> {
+    let mut state = parse_state(path)?;
+    simulate(&mut state, 256)
 }
 
 pub fn parse_state(path: &str) -> Result<Vec<i64>> {
-    let br = BufReader::new(File::open(path)?);
-    let mut in_lines = br.lines();
-    let input = in_lines
-        .next()
-        .ok_or_else(|| Error::msg("Expected at least one line"))??
-        .split(',')
-        .map(|x| x.parse())
-        .collect::<Result<Vec<usize>, _>>()?;
+    let (input, _) = parse_first_to_vec::<usize>(path, ",")?;
     let mut counts = vec![0; 9];
     for x in input {
         counts[x] += 1;
