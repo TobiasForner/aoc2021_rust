@@ -33,75 +33,50 @@ impl InputPair {
     }
 
     fn digit_sum(&self) -> usize {
-        //figure out digit representation, this contains the indices into self.digits that have been figured out, or 10000 as default value
-        let mut digit_representations: Vec<usize> = vec![10000; 10];
-        for (index, x) in self.digits.iter().enumerate() {
+        //contains the character sets representing digit i at position i
+        let mut digit_representations2: Vec<HashSet<char>> = vec![HashSet::new(); 10];
+        for x in &self.digits {
+            let x = x.clone();
             match x.len() {
-                2 => digit_representations[1] = index,
-                3 => digit_representations[7] = index,
-                4 => digit_representations[4] = index,
-                7 => digit_representations[8] = index,
+                2 => digit_representations2[1] = x,
+                3 => digit_representations2[7] = x,
+                4 => digit_representations2[4] = x,
+                7 => digit_representations2[8] = x,
                 _ => {}
             }
         }
 
         //3 is the only one with 5 segments and a two segment intersection with 1
-        for (index, x) in self.digits.iter().enumerate() {
+        for x in &self.digits {
             if x.len() == 5 {
-                if x.intersection(&self.digits[digit_representations[1]])
-                    .map(|x| *x)
-                    .collect::<Vec<char>>()
-                    .len()
-                    == 2
-                {
-                    digit_representations[3] = index;
+                if x.intersection(&digit_representations2[1]).count() == 2 {
+                    digit_representations2[3] = x.clone();
                 }
             }
         }
 
         // 0, 6 or 9 are the digits with 6 segments
-        for (index, x) in self.digits.iter().enumerate() {
+        for x in &self.digits {
             if x.len() == 6 {
-                if x.intersection(&self.digits[digit_representations[3]])
-                    .map(|x| *x)
-                    .collect::<Vec<char>>()
-                    .len()
-                    == 5
-                {
-                    digit_representations[9] = index;
-                } else if x
-                    .intersection(&self.digits[digit_representations[1]])
-                    .map(|x| *x)
-                    .collect::<Vec<char>>()
-                    .len()
-                    == 2
-                {
-                    digit_representations[0] = index;
+                if x.intersection(&digit_representations2[3]).count() == 5 {
+                    digit_representations2[9] = x.clone();
+                } else if x.intersection(&digit_representations2[1]).count() == 2 {
+                    digit_representations2[0] = x.clone();
                 } else {
-                    digit_representations[6] = index;
+                    digit_representations2[6] = x.clone();
                 }
             }
         }
 
         //5 and 2
-        for (index, x) in self.digits.iter().enumerate() {
+        for x in &self.digits {
             if x.len() == 5 {
-                if x.intersection(&self.digits[digit_representations[1]])
-                    .map(|x| *x)
-                    .collect::<Vec<char>>()
-                    .len()
-                    != 2
-                {
+                if x.intersection(&digit_representations2[1]).count() != 2 {
                     //2 or 5
-                    if x.intersection(&self.digits[digit_representations[6]])
-                        .map(|x| *x)
-                        .collect::<Vec<char>>()
-                        .len()
-                        == 5
-                    {
-                        digit_representations[5] = index;
+                    if x.intersection(&digit_representations2[6]).count() == 5 {
+                        digit_representations2[5] = x.clone();
                     } else {
-                        digit_representations[2] = index;
+                        digit_representations2[2] = x.clone();
                     }
                 }
             }
@@ -110,14 +85,14 @@ impl InputPair {
         let mut result = 0;
         let base: usize = 10;
         for (out_index, x) in self.output.iter().rev().enumerate() {
-            for (digit, y) in digit_representations.iter().enumerate() {
-                if self.digits[*y] == *x {
+            for (digit, y) in digit_representations2.iter().enumerate() {
+                if *y == *x {
                     result += base.pow(out_index as u32) * digit;
                     break;
                 }
             }
         }
-        result
+        return result;
     }
 }
 
