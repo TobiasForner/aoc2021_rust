@@ -6,6 +6,7 @@ mod day05;
 mod day06;
 mod day07;
 mod day08;
+mod day09;
 mod util;
 
 use anyhow::{Error, Result};
@@ -41,6 +42,7 @@ fn main() -> Result<(), Error> {
         6 => run_day!(day06),
         7 => run_day!(day07),
         8 => run_day!(day08),
+        9 => run_day!(day08),
         _ => println!("So far there are no solutions for day: {}", day),
     }
     Ok(())
