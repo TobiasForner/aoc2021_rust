@@ -67,28 +67,19 @@ pub fn part2(path: &str) -> Result<u32> {
                 if basin_mapping[y][x] != -1 || *depth == 9 {
                     continue;
                 }
-                if x > 0 && row.depths[x - 1] < *depth && basin_mapping[y][x - 1] != -1 {
+                if add_to_basin(*depth, x - 1, y, &height_rows, &basin_mapping) {
                     basin_mapping[y][x] = basin_mapping[y][x - 1];
                     basin_sizes[basin_mapping[y][x] as usize] += 1;
                     change = true;
-                } else if x < row.depths.len() - 1
-                    && row.depths[x + 1] < *depth
-                    && basin_mapping[y][x + 1] != -1
-                {
+                } else if add_to_basin(*depth, x + 1, y, &height_rows, &basin_mapping) {
                     basin_mapping[y][x] = basin_mapping[y][x + 1];
                     basin_sizes[basin_mapping[y][x] as usize] += 1;
                     change = true;
-                } else if y > 0
-                    && height_rows[y - 1].depths[x] < *depth
-                    && basin_mapping[y - 1][x] != -1
-                {
+                } else if add_to_basin(*depth, x, y - 1, &height_rows, &basin_mapping) {
                     basin_mapping[y][x] = basin_mapping[y - 1][x];
                     basin_sizes[basin_mapping[y][x] as usize] += 1;
                     change = true;
-                } else if y < height_rows.len() - 1
-                    && height_rows[y + 1].depths[x] < *depth
-                    && basin_mapping[y + 1][x] != -1
-                {
+                } else if add_to_basin(*depth, x, y + 1, &height_rows, &basin_mapping) {
                     basin_mapping[y][x] = basin_mapping[y + 1][x];
                     basin_sizes[basin_mapping[y][x] as usize] += 1;
                     change = true;
@@ -104,4 +95,17 @@ pub fn part2(path: &str) -> Result<u32> {
         * basin_sizes[basin_sizes.len() - 2]
         * basin_sizes[basin_sizes.len() - 3];
     Ok(res as u32)
+}
+
+fn add_to_basin(
+    depth: u32,
+    x: usize,
+    y: usize,
+    height_rows: &Vec<HeightRow>,
+    basin_mapping: &Vec<Vec<i32>>,
+) -> bool {
+    y < height_rows.len()
+        && x < height_rows[0].depths.len()
+        && basin_mapping[y][x] != -1
+        && depth < height_rows[y].depths[x]
 }
