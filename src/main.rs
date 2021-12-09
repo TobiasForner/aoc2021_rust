@@ -20,7 +20,7 @@ use clap::Parser;
 #[clap(version = "1.0")]
 struct Opts {
     /// day of aoc 2021 to execute
-    #[clap(short, long, default_value = "8")]
+    #[clap(short, long, default_value = "9")]
     day: u16,
 }
 
@@ -42,7 +42,7 @@ fn main() -> Result<(), Error> {
         6 => run_day!(day06),
         7 => run_day!(day07),
         8 => run_day!(day08),
-        9 => run_day!(day08),
+        9 => run_day!(day09),
         _ => println!("So far there are no solutions for day: {}", day),
     }
     Ok(())
