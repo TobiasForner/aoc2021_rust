@@ -67,7 +67,7 @@ pub fn part2(path: &str) -> Result<u32> {
                 if basin_mapping[y][x] != -1 || *depth == 9 {
                     continue;
                 }
-                if add_to_basin(*depth, x - 1, y, &height_rows, &basin_mapping) {
+                if x > 0 && add_to_basin(*depth, x - 1, y, &height_rows, &basin_mapping) {
                     basin_mapping[y][x] = basin_mapping[y][x - 1];
                     basin_sizes[basin_mapping[y][x] as usize] += 1;
                     change = true;
@@ -75,7 +75,7 @@ pub fn part2(path: &str) -> Result<u32> {
                     basin_mapping[y][x] = basin_mapping[y][x + 1];
                     basin_sizes[basin_mapping[y][x] as usize] += 1;
                     change = true;
-                } else if add_to_basin(*depth, x, y - 1, &height_rows, &basin_mapping) {
+                } else if y > 0 && add_to_basin(*depth, x, y - 1, &height_rows, &basin_mapping) {
                     basin_mapping[y][x] = basin_mapping[y - 1][x];
                     basin_sizes[basin_mapping[y][x] as usize] += 1;
                     change = true;
@@ -107,5 +107,5 @@ fn add_to_basin(
     y < height_rows.len()
         && x < height_rows[0].depths.len()
         && basin_mapping[y][x] != -1
-        && depth < height_rows[y].depths[x]
+        && depth > height_rows[y].depths[x]
 }
