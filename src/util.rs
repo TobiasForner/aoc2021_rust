@@ -5,11 +5,18 @@ use std::fs::File;
 use std::iter::Iterator;
 use std::str::FromStr;
 
-pub fn read_to_vec<T: FromStr>(path: &str) -> Result<Vec<T>>
+pub fn read_to_vec<T: FromStrCtx>(path: &str) -> Result<Vec<T>>
 where
     anyhow::Error: From<T::Err>,
 {
-    parse_lines(File::open(path)?)
+    parse_lines(File::open(path)?, &mut ())
+}
+
+pub fn read_to_vec_ctx<Ctx, T: FromStrCtx<Ctx>>(path: &str, c: &mut Ctx) -> Result<Vec<T>>
+where
+    anyhow::Error: From<T::Err>,
+{
+    parse_lines(File::open(path)?, c)
 }
 
 pub fn parse_first_to_vec<T: FromStr>(
@@ -30,12 +37,14 @@ where
     Ok((x, in_lines))
 }
 
-fn parse_lines<T: FromStr, R: Read>(io: R) -> Result<Vec<T>>
+fn parse_lines<Ctx, T: FromStrCtx<Ctx>, R: Read>(io: R, c: &mut Ctx) -> Result<Vec<T>>
 where
     anyhow::Error: From<T::Err>,
 {
     let br = BufReader::new(io);
-    br.lines().map(|line| Ok(line?.parse()?)).collect()
+    br.lines()
+        .map(|line| Ok(T::from_str_ctx(&line?, c)?))
+        .collect()
 }
 
 #[macro_export]
@@ -72,4 +81,16 @@ macro_rules! standard_tests {
             Ok(())
         })?
     };
+}
+
+pub trait FromStrCtx<Ctx = ()>: Sized {
+    type Err;
+    fn from_str_ctx(s: &str, c: &mut Ctx) -> Result<Self, Self::Err>;
+}
+
+impl<T: FromStr> FromStrCtx for T {
+    type Err = T::Err;
+    fn from_str_ctx(s: &str, _: &mut ()) -> Result<Self, Self::Err> {
+        T::from_str(s)
+    }
 }
