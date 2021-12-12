@@ -48,30 +48,6 @@ macro_rules! print_result {
 
 #[macro_export]
 macro_rules! standard_tests {
-    /*($mod_name: ident, $day: expr, $test_res_part1: expr, $res_part1: expr, $test_res_part2: expr, $res_part2: expr) => {
-        use anyhow::Result;
-        use aoc2021_rust::$mod_name::{part1, part2};
-
-        #[test]
-        fn test_part1() -> Result<()> {
-            assert_eq!(
-                part1(&format!("inputs/day{:0>2}_test.txt", $day))?,
-                $test_res_part1
-            );
-            assert_eq!(part1(&format!("inputs/day{:0>2}.txt", $day))?, $res_part1);
-            Ok(())
-        }
-
-        #[test]
-        fn test_part2() -> Result<()> {
-            assert_eq!(
-                part2(&format!("inputs/day{:0>2}_test.txt", $day))?,
-                $test_res_part2
-            );
-            assert_eq!(part2(&format!("inputs/day{:0>2}.txt", $day))?, $res_part2);
-            Ok(())
-        }
-    };*/
     ($mod_name: ident, $day: expr, test_part1=$test_res_part1: expr$(, part1=$res_part1: expr)?$(, test_part2=$test_res_part2: expr$(, part2=$res_part2: expr)?)?) => {
         use anyhow::Result;
         use aoc2021_rust::$mod_name::{part1, part2};
