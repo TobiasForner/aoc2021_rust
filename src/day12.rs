@@ -39,42 +39,42 @@ impl FromStr for Edge {
     }
 }
 
-fn explore(visited: HashSet<Node>, edges: &HashMap<Node, Vec<&Edge>>, current: &Node) -> u64 {
-    use Node::*;
-    let mut result = 0;
-    if let Some(curr_edges) = edges.get(current) {
-        for e in curr_edges {
-            match &e.end {
-                Small(x) => {
-                    if visited.contains(&e.end) {
-                        continue;
-                    } else if x == "end" {
-                        result += 1;
-                    } else {
-                        let mut new_visited = visited.clone();
-                        new_visited.insert(e.end.clone());
-                        result += explore(new_visited, edges, &e.end);
-                    }
-                }
-                Large(_) => {
-                    let mut new_visited = visited.clone();
-                    new_visited.insert(e.end.clone());
-                    result += explore(new_visited, edges, &e.end);
-                }
-            }
-        }
+fn parse_input(path: &str) -> Result<HashMap<Node, Vec<Edge>>> {
+    let edges: Vec<Edge> = read_to_vec(path)?;
+    let mut node_to_edges: HashMap<Node, Vec<Edge>> = HashMap::new();
+    let rev_edges: Vec<Edge> = edges
+        .iter()
+        .map(|e| Edge {
+            start: e.end.clone(),
+            end: e.start.clone(),
+        })
+        .collect();
+    for e in edges {
+        let start = e.start.clone();
+        node_to_edges.entry(start).or_insert(vec![]).push(e);
     }
-    result
+    for e in rev_edges {
+        let start = e.start.clone();
+        node_to_edges.entry(start).or_insert(vec![]).push(e);
+    }
+    Ok(node_to_edges)
 }
 
-fn explore_part2(
+fn explore(
     visited: HashSet<Node>,
-    edges: &HashMap<Node, Vec<&Edge>>,
+    edges: &HashMap<Node, Vec<Edge>>,
     current: &Node,
     small_visited_twice: bool,
 ) -> u64 {
     use Node::*;
     let mut result = 0;
+    macro_rules! visit_node {
+        ($e: expr, $visited_twice: expr) => {
+            let mut new_visited = visited.clone();
+            new_visited.insert($e.end.clone());
+            result += explore(new_visited, edges, &$e.end, $visited_twice);
+        };
+    }
     if let Some(curr_edges) = edges.get(current) {
         for e in curr_edges {
             match &e.end {
@@ -85,22 +85,16 @@ fn explore_part2(
                         continue;
                     } else if visited.contains(&e.end) {
                         if !small_visited_twice {
-                            let mut new_visited = visited.clone();
-                            new_visited.insert(e.end.clone());
-                            result += explore_part2(new_visited, edges, &e.end, true);
+                            visit_node!(e, true);
                         } else {
                             continue;
                         }
                     } else {
-                        let mut new_visited = visited.clone();
-                        new_visited.insert(e.end.clone());
-                        result += explore_part2(new_visited, edges, &e.end, small_visited_twice);
+                        visit_node!(e, small_visited_twice);
                     }
                 }
                 Large(_) => {
-                    let mut new_visited = visited.clone();
-                    new_visited.insert(e.end.clone());
-                    result += explore_part2(new_visited, edges, &e.end, small_visited_twice);
+                    visit_node!(e, small_visited_twice);
                 }
             }
         }
@@ -109,51 +103,19 @@ fn explore_part2(
 }
 
 pub fn part1(path: &str) -> Result<u64> {
-    let edges: Vec<Edge> = read_to_vec(path)?;
-    let mut node_to_edges: HashMap<Node, Vec<&Edge>> = HashMap::new();
-    let rev_edges: Vec<Edge> = edges
-        .iter()
-        .map(|e| Edge {
-            start: e.end.clone(),
-            end: e.start.clone(),
-        })
-        .collect();
-    for e in &edges {
-        let start = e.start.clone();
-        node_to_edges.entry(start).or_insert(vec![]).push(&e);
-    }
-    for e in &rev_edges {
-        let start = e.start.clone();
-        node_to_edges.entry(start).or_insert(vec![]).push(&e);
-    }
+    let node_to_edges = parse_input(path)?;
     let start = Node::Small("start".to_string());
     let mut visited = HashSet::new();
     visited.insert(start.clone());
-    let res = explore(visited, &node_to_edges, &start);
+    let res = explore(visited, &node_to_edges, &start, true);
     Ok(res)
 }
 
 pub fn part2(path: &str) -> Result<u64> {
-    let edges: Vec<Edge> = read_to_vec(path)?;
-    let mut node_to_edges: HashMap<Node, Vec<&Edge>> = HashMap::new();
-    let rev_edges: Vec<Edge> = edges
-        .iter()
-        .map(|e| Edge {
-            start: e.end.clone(),
-            end: e.start.clone(),
-        })
-        .collect();
-    for e in &edges {
-        let start = e.start.clone();
-        node_to_edges.entry(start).or_insert(vec![]).push(&e);
-    }
-    for e in &rev_edges {
-        let start = e.start.clone();
-        node_to_edges.entry(start).or_insert(vec![]).push(&e);
-    }
+    let node_to_edges = parse_input(path)?;
     let start = Node::Small("start".to_string());
     let mut visited = HashSet::new();
     visited.insert(start.clone());
-    let res = explore_part2(visited, &node_to_edges, &start, false);
+    let res = explore(visited, &node_to_edges, &start, false);
     Ok(res)
 }
