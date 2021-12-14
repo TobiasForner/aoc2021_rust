@@ -47,6 +47,44 @@ where
         .collect()
 }
 
+/*enum ParseType {
+    CharParse,
+    LineParseSingle,
+    LineParseMultiple(String),
+    MultilineParse(String),
+}*/
+
+#[macro_export]
+macro_rules! parse_input {
+    ($path: expr, $vec1:expr, $type1:ident , $sep1: expr $(,$vec:expr, $type:ident, $sep: expr)*) => {{
+        use std::fs::File;
+        use std::io::{BufRead, BufReader};
+        let io = File::open($path)?;
+        let br = BufReader::new(io);
+        let mut lines = br.lines();
+        loop{
+            if let Some(x)=lines.next(){
+                let x=x?;
+                if x==$sep1{
+                    break;
+                }
+                $vec1.push($type1::from_str(&x)?);
+            }else{break;}
+        }
+        $(
+            loop{
+                if let Some(x)=lines.next(){
+                    let x=x?;
+                    if x==$sep{
+                        break;
+                    }
+                    $vec.push($type::from_str(&x)?);
+                }else{break;}
+            }
+        )*
+    }};
+}
+
 #[macro_export]
 macro_rules! print_result {
     ($day: expr, $part: expr, $result: expr) => {

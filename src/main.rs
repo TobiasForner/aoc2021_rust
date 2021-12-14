@@ -13,6 +13,7 @@ mod day10;
 mod day11;
 mod day12;
 mod day13;
+mod day14;
 mod util;
 
 use anyhow::{Error, Result};
@@ -26,7 +27,7 @@ use clap::Parser;
 #[clap(version = "1.0")]
 struct Opts {
     /// day of aoc 2021 to execute
-    #[clap(short, long, default_value = "12")]
+    #[clap(short, long, default_value = "14")]
     day: u16,
 }
 
@@ -53,6 +54,7 @@ fn main() -> Result<(), Error> {
         11 => run_day!(day11),
         12 => run_day!(day12),
         13 => run_day!(day13),
+        14 => run_day!(day14),
         _ => println!("So far there are no solutions for day: {}", day),
     }
     Ok(())

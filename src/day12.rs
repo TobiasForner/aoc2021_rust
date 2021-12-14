@@ -1,6 +1,6 @@
 use crate::util::{read_to_vec_ctx, FromStrCtx};
 use anyhow::{Context, Error, Result};
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 type Ctx = HashMap<String, Node>;
 type NodeLabel = usize;
