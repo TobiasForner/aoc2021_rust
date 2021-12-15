@@ -5,5 +5,6 @@ standard_tests!(
     14,
     test_part1 = 1588,
     part1 = 2891,
-    test_part2 = 2188189693529
+    test_part2 = 2188189693529,
+    part2 = 4607749009683
 );

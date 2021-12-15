@@ -1,6 +1,6 @@
 use crate::parse_input;
 use anyhow::{Context, Result};
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 use std::str::FromStr;
 
 impl FromStr for Point {

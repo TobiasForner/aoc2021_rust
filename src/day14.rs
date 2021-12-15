@@ -80,35 +80,26 @@ fn run_steps_v2(max_steps: u32, path: &str) -> Result<usize> {
     Ok(max - min)
 }
 
+#[allow(dead_code)]
 fn run_steps(max_steps: u32, path: &str) -> Result<usize> {
     let (mut template, rules) = parse_input(path)?;
     for _ in 1..=max_steps {
         //let mut new_template = template.clone();
         let mut number_inserted = 0;
-        println!("--------------------");
         let mut to_add: Vec<(usize, char)> = Vec::with_capacity(100);
         for (index, w) in template.windows(2).enumerate() {
             for rule in &rules {
                 let left = rule.left;
                 if left.0 == w[0] && left.1 == w[1] {
                     to_add.push((index + 1 + number_inserted, rule.right));
-                    //new_template.insert(, rule.right);
-                    println!(
-                        "inserted {} at pos {}",
-                        rule.right,
-                        index + 1 + number_inserted
-                    );
                     number_inserted += 1;
                     break;
-
-                    //println!("{:?}", new_template);
                 }
             }
         }
         for (index, c) in to_add {
             template.insert(index, c);
         }
-        //template = new_template;
         println!("{:?}", template);
     }
     let counts = template.into_iter().counts();
