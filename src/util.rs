@@ -47,13 +47,6 @@ where
         .collect()
 }
 
-/*enum ParseType {
-    CharParse,
-    LineParseSingle,
-    LineParseMultiple(String),
-    MultilineParse(String),
-}*/
-
 #[macro_export]
 macro_rules! parse_input {
     ($path: expr, $vec1:expr, $type1:ident , $sep1: expr $(,$vec:expr, $type:ident, $sep: expr)*) => {{
@@ -92,6 +85,74 @@ macro_rules! print_result {
         return Ok(());
     };
 }
+
+/*pub enum ParseType {
+    CharParse,
+    MultilineCharParse(String),
+    LineParseSingle,
+    LineParseMultiple(String),
+}
+
+#[macro_export]
+macro_rules! parse_input_v2 {
+    ($path: expr, $($parse_type: expr, $typ: ty,)+) => {{
+        use crate::util::ParseType::*;
+        use std::fs::File;
+        use std::io::{BufRead, BufReader};
+        let io = File::open($path)?;
+        let br = BufReader::new(io);
+        let mut lines = br.lines();
+        let mut res: ($(match $parse_type{
+            CharParse=> Vec<$typ>
+            MultilineCharParse=>Vec<Vec<$typ>>
+        LineParseSingle=>$typ
+    LineParseMultiple=>Vec<$typ>},)+);
+        let mut count =0;
+        $(let res1=match $parse_type {
+            CharParse => {
+                let line = lines.next().unwrap()?;
+                let chars: Vec<$typ> = line.chars().collect();
+                chars
+            }
+            MultilineCharParse(sep) => {
+                let mut vec = vec![];
+                const RADIX:u32=10;
+                loop{
+                    if let Some(x)=lines.next(){
+                        let x=x?;
+                        if x==sep{
+                            break;
+                        }
+                        vec.push(x.chars()
+                        .map(|y| y.to_digit(RADIX).unwrap() as $typ).collect::<Vec<&typ>>());
+                    }else{break;}
+                }
+                vec
+            }
+            LineParseSingle => {
+                let line = lines.next().unwrap()?;
+                let res = line.parse::<$typ>();
+                res
+            }
+            LineParseMultiple(sep) => {
+                let mut vec = vec![];
+                loop{
+                    if let Some(x)=lines.next(){
+                        let x=x?;
+                        if x==sep{
+                            break;
+                        }
+                        vec.push($typ::from_str(&x)?);
+                    }else{break;}
+                }
+                vec
+            }
+        }
+        res[count]=res1;
+    count+=1;)+
+    res
+    };}
+}*/
 
 #[macro_export]
 macro_rules! standard_tests {
