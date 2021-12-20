@@ -30,32 +30,11 @@ pub fn part1(path: &str) -> Result<i32> {
         let upper_y_v = if min_x_v * (min_x_v + 1) / 2 > x_end {
             x_end / 2
         } else {
-            200 //just a suitably large guessed bound
+            y_start.abs() + 1
         };
         for y_v in max_y_v..=upper_y_v {
-            let mut x_pos = 0;
-            let mut y_pos = 0;
-            let mut current_v = (min_x_v, y_v);
-            //simulate
-            loop {
-                if current_v.0 == 0 && (x_pos < x_start || x_pos > x_end) {
-                    break;
-                }
-                if x_pos > x_end || y_pos < y_start {
-                    break;
-                }
-                x_pos += current_v.0;
-                y_pos += current_v.1;
-                if x_start <= x_pos && x_pos <= x_end && y_start <= y_pos && y_pos <= y_end {
-                    if y_v > max_y_v {
-                        max_y_v = y_v;
-                    }
-                    break;
-                }
-                if current_v.0 > 0 {
-                    current_v.0 -= 1;
-                }
-                current_v.1 -= 1;
+            if hits_target(min_x_v, y_v, x_start, x_end, y_start, y_end) {
+                max_y_v = y_v;
             }
         }
         min_x_v += 1;
@@ -80,31 +59,11 @@ pub fn part2(path: &str) -> Result<i32> {
         let upper_y_v = if min_x_v * (min_x_v + 1) / 2 > x_end {
             x_end / 2
         } else {
-            2000 //just a suitably large guessed bound
+            y_start.abs() + 1
         };
         for y_v in y_start..=upper_y_v {
-            let mut x_pos = 0;
-            let mut y_pos = 0;
-            let mut current_v = (min_x_v, y_v);
-            //simulate
-            loop {
-                if current_v.0 == 0 && (x_pos < x_start || x_pos > x_end) {
-                    break;
-                }
-                if x_pos > x_end || y_pos < y_start {
-                    break;
-                }
-                x_pos += current_v.0;
-                y_pos += current_v.1;
-                if x_start <= x_pos && x_pos <= x_end && y_start <= y_pos && y_pos <= y_end {
-                    //println!("{},{}", min_x_v, y_v);
-                    result += 1;
-                    break;
-                }
-                if current_v.0 > 0 {
-                    current_v.0 -= 1;
-                }
-                current_v.1 -= 1;
+            if hits_target(min_x_v, y_v, x_start, x_end, y_start, y_end) {
+                result += 1;
             }
         }
         min_x_v += 1;
@@ -113,4 +72,27 @@ pub fn part2(path: &str) -> Result<i32> {
         }
     }
     Ok(result)
+}
+
+fn hits_target(x_vel: i32, y_vel: i32, x_start: i32, x_end: i32, y_start: i32, y_end: i32) -> bool {
+    let mut x_pos = 0;
+    let mut y_pos = 0;
+    let mut current_v = (x_vel, y_vel);
+    loop {
+        if current_v.0 == 0 && (x_pos < x_start || x_pos > x_end) {
+            return false;
+        }
+        if x_pos > x_end || y_pos < y_start {
+            return false;
+        }
+        x_pos += current_v.0;
+        y_pos += current_v.1;
+        if x_start <= x_pos && x_pos <= x_end && y_start <= y_pos && y_pos <= y_end {
+            return true;
+        }
+        if current_v.0 > 0 {
+            current_v.0 -= 1;
+        }
+        current_v.1 -= 1;
+    }
 }
