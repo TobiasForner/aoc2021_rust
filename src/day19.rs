@@ -305,10 +305,10 @@ pub fn part1(path: &str) -> Result<usize> {
     let mut scanner_positions: Vec<Position> = vec![Position { x: 0, y: 0, z: 0 }];
     'outer: loop {
         println!("{}", scans.len());
-        for second in 1..scans.len() {
-            for pos1 in 0..scans[0].len() {
-                let p1 = scans[0][pos1];
-                let dists: HashSet<u32> = scans[0].iter().map(|p| p1.dist(*p)).collect();
+        for pos1 in 0..scans[0].len() {
+            let p1 = scans[0][pos1];
+            let dists: HashSet<u32> = scans[0].iter().map(|p| p1.dist(*p)).collect();
+            for second in 1..scans.len() {
                 for pos2 in 0..scans[second].len() {
                     let p2 = scans[second][pos2];
                     let dists2: HashSet<u32> = scans[second].iter().map(|p| p2.dist(*p)).collect();
@@ -321,11 +321,12 @@ pub fn part1(path: &str) -> Result<usize> {
                         }
                     }
                 }
-            }
-            let (found, pos) = merge_scanners(0, second, &mut scans);
-            if found == true {
-                scanner_positions.push(pos);
-                continue 'outer;
+
+                let (found, pos) = merge_scanners(0, second, &mut scans);
+                if found == true {
+                    scanner_positions.push(pos);
+                    continue 'outer;
+                }
             }
         }
         break;
