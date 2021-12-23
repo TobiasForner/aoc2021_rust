@@ -32,7 +32,7 @@ use clap::Parser;
 #[clap(version = "1.0")]
 struct Opts {
     /// day of aoc 2021 to execute
-    #[clap(short, long, default_value = "18")]
+    #[clap(short, long, default_value = "19")]
     day: u16,
 }
 

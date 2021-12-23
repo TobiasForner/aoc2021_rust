@@ -27,12 +27,7 @@ pub fn part1(path: &str) -> Result<i32> {
     }
     let mut max_y_v = 0;
     loop {
-        let upper_y_v = if min_x_v * (min_x_v + 1) / 2 > x_end {
-            x_end / 2
-        } else {
-            y_start.abs() + 1
-        };
-        for y_v in max_y_v..=upper_y_v {
+        for y_v in max_y_v..=upper_bound_y_v(min_x_v, x_end, y_start) {
             if hits_target(min_x_v, y_v, x_start, x_end, y_start, y_end) {
                 max_y_v = y_v;
             }
@@ -56,12 +51,7 @@ pub fn part2(path: &str) -> Result<i32> {
         min_x_v += 1;
     }
     loop {
-        let upper_y_v = if min_x_v * (min_x_v + 1) / 2 > x_end {
-            x_end / 2
-        } else {
-            y_start.abs() + 1
-        };
-        for y_v in y_start..=upper_y_v {
+        for y_v in y_start..=upper_bound_y_v(min_x_v, x_end, y_start) {
             if hits_target(min_x_v, y_v, x_start, x_end, y_start, y_end) {
                 result += 1;
             }
@@ -72,6 +62,14 @@ pub fn part2(path: &str) -> Result<i32> {
         }
     }
     Ok(result)
+}
+
+fn upper_bound_y_v(x_v: i32, x_end: i32, y_start: i32) -> i32 {
+    if x_v * (x_v + 1) / 2 > x_end {
+        x_end / 2
+    } else {
+        y_start.abs() + 1
+    }
 }
 
 fn hits_target(x_vel: i32, y_vel: i32, x_start: i32, x_end: i32, y_start: i32, y_end: i32) -> bool {
