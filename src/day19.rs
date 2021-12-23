@@ -158,6 +158,81 @@ fn check_all_z_rotations(
     (false, Position { x: 0, y: 0, z: 0 })
 }
 
+fn merge_scanners_hints(
+    first: usize,
+    second: usize,
+    scans: &mut Vec<Vec<Position>>,
+    pos1: usize,
+    pos2: usize,
+) -> (bool, Position) {
+    //try all rotations of second
+    let mut current = scans[second].clone();
+    //z points to front
+    let (found, pos) = check_all_z_rotations_hints(&mut current, scans, first, second, pos1, pos2);
+    if found {
+        return (true, pos);
+    }
+    current = current.iter().map(|x| x.rotate_y()).collect();
+    //x points to front
+    let (found, pos) = check_all_z_rotations_hints(&mut current, scans, first, second, pos1, pos2);
+    if found {
+        return (true, pos);
+    }
+    current = current.iter().map(|x| x.rotate_y()).collect();
+    //z points to back
+    let (found, pos) = check_all_z_rotations_hints(&mut current, scans, first, second, pos1, pos2);
+    if found {
+        return (true, pos);
+    }
+    current = current.iter().map(|x| x.rotate_y()).collect();
+    //x points to back
+    let (found, pos) = check_all_z_rotations_hints(&mut current, scans, first, second, pos1, pos2);
+    if found {
+        return (true, pos);
+    }
+    //y points to front
+    current = current.iter().map(|x| x.rotate_x()).collect();
+    let (found, pos) = check_all_z_rotations_hints(&mut current, scans, first, second, pos1, pos2);
+    if found {
+        return (true, pos);
+    }
+    //y points to back
+    current = current.iter().map(|x| x.rotate_y().rotate_y()).collect();
+    let (found, pos) = check_all_z_rotations_hints(&mut current, scans, first, second, pos1, pos2);
+    if found {
+        return (true, pos);
+    }
+
+    //check all point pairs of both for same distance
+    //if match is at least of size 12 then merge the vecs
+    (false, Position { x: 0, y: 0, z: 0 })
+}
+
+fn check_all_z_rotations_hints(
+    current: &mut Vec<Position>,
+    scans: &mut Vec<Vec<Position>>,
+    first: usize,
+    second: usize,
+    pos1: usize,
+    pos2: usize,
+) -> (bool, Position) {
+    for _ in 0..=3 {
+        *current = current.iter().map(|x| x.rotate_z()).collect();
+
+        //println!("{:?}", current);
+        let (success, positions, p) =
+            check_match_with_hints(&mut scans[first], &current, pos1, pos2);
+        if success {
+            scans[first].extend(positions);
+            scans[first].sort();
+            scans[first].dedup();
+            scans.remove(second);
+            return (true, p);
+        }
+    }
+    (false, Position { x: 0, y: 0, z: 0 })
+}
+
 fn check_match(
     first: &mut Vec<Position>,
     second: &Vec<Position>,
@@ -168,17 +243,9 @@ fn check_match(
         let dists: HashSet<Position> = first_copy.iter().map(|p| p1.dist_pos(*p)).collect();
         for p2 in &*second {
             let dists2: HashSet<Position> = second_copy.iter().map(|p| p2.dist_pos(*p)).collect();
-            //println!("{:?}", dists);
-            //println!("{:?}", dists2);
             let tmp = dists.intersection(&dists2).count();
-            //println!("{}", tmp);
             if tmp >= 12 {
-                //println!("{:?}, {:?}", p1, p2);
                 let rel_position = p1.dist_pos(*p2);
-                /*println!(
-                    "manhattan dist: {}",
-                    (p1.x - p2.x).abs() + (p1.y - p2.y).abs() + (p1.z - p2.z).abs()
-                );*/
                 let dist_pos = Position {
                     x: p1.x - p2.x,
                     y: p1.y - p2.y,
@@ -199,10 +266,71 @@ fn check_match(
     (false, vec![], Position { x: 0, y: 0, z: 0 })
 }
 
+fn check_match_with_hints(
+    first: &mut Vec<Position>,
+    second: &Vec<Position>,
+    pos1: usize,
+    pos2: usize,
+) -> (bool, Vec<Position>, Position) {
+    let p1 = first[pos1];
+    let p2 = second[pos2];
+    let dists: HashSet<Position> = first.iter().map(|p| p1.dist_pos(*p)).collect();
+
+    let dists2: HashSet<Position> = second.iter().map(|p| p2.dist_pos(*p)).collect();
+    let tmp = dists.intersection(&dists2).count();
+    if tmp >= 12 {
+        let rel_position = p1.dist_pos(p2);
+        let dist_pos = Position {
+            x: p1.x - p2.x,
+            y: p1.y - p2.y,
+            z: p1.z - p2.z,
+        };
+        let to_add = second
+            .iter()
+            .map(|x| Position {
+                x: x.x + rel_position.x,
+                y: x.y + rel_position.y,
+                z: x.z + rel_position.z,
+            })
+            .collect();
+        return (true, to_add, dist_pos);
+    }
+
+    (false, vec![], Position { x: 0, y: 0, z: 0 })
+}
+
 pub fn part1(path: &str) -> Result<usize> {
     let mut scans = parse_input(path)?;
-    /*let mut res: usize = scans.iter().map(|x| x.len()).sum();
-    for first in 0..scans.len() {
+
+    let mut scanner_positions: Vec<Position> = vec![Position { x: 0, y: 0, z: 0 }];
+    'outer: loop {
+        println!("{}", scans.len());
+        for second in 1..scans.len() {
+            for pos1 in 0..scans[0].len() {
+                let p1 = scans[0][pos1];
+                let dists: HashSet<u32> = scans[0].iter().map(|p| p1.dist(*p)).collect();
+                for pos2 in 0..scans[second].len() {
+                    let p2 = scans[second][pos2];
+                    let dists2: HashSet<u32> = scans[second].iter().map(|p| p2.dist(*p)).collect();
+                    if dists.intersection(&dists2).count() >= 12 {
+                        //potential corresponding pattern
+                        let (found, pos) = merge_scanners_hints(0, second, &mut scans, pos1, pos2);
+                        if found == true {
+                            scanner_positions.push(pos);
+                            continue 'outer;
+                        }
+                    }
+                }
+            }
+            let (found, pos) = merge_scanners(0, second, &mut scans);
+            if found == true {
+                scanner_positions.push(pos);
+                continue 'outer;
+            }
+        }
+        break;
+    }
+    /*for first in 0..scans.len() {
         for second in first + 1..scans.len() {
             for p1 in &scans[first] {
                 let dists: HashSet<u32> = scans[first].iter().map(|p| p1.dist(*p)).collect();
@@ -217,23 +345,19 @@ pub fn part1(path: &str) -> Result<usize> {
                 }
             }
         }
-    }*/
+    }
     let mut scanner_positions: Vec<Position> = vec![Position { x: 0, y: 0, z: 0 }];
     'outer: loop {
         println!("{}", scans.len());
-        //for first in 0..scans.len() - 1 {
         for second in 1..scans.len() {
             let (found, pos) = merge_scanners(0, second, &mut scans);
             if found == true {
                 scanner_positions.push(pos);
-                //println!("found");
                 continue 'outer;
             }
         }
-        //}
-
         break;
-    }
+    }*/
     let mut max_dist = 0;
     for i in 0..scanner_positions.len() {
         for j in i + 1..scanner_positions.len() {
@@ -245,7 +369,7 @@ pub fn part1(path: &str) -> Result<usize> {
             }
         }
     }
-    println!("{:?}", scanner_positions);
+    //println!("{:?}", scanner_positions);
     println!("max manhattan dist: {}", max_dist);
     let res = scans.iter().map(|x| x.len()).sum();
     Ok(res)
