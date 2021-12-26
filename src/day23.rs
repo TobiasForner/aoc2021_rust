@@ -104,13 +104,11 @@ fn solve_stack(
                     }
                     if success {
                         change = true;
-                        //println!("moved into correct room!");
                         let place = (0..room_size)
                             .filter(|x| dest_room[*x as usize] == '.')
                             .max()
                             .unwrap();
                         check_state(&hallway, &room1, &room2, &room3, &room4, room_size);
-                        //println!("placing {} at {}; resetting hallway pos {}", c, place, pos);
                         dest_room[place] = c;
                         hallway[pos] = '.';
                         let rooms = match c {
@@ -124,7 +122,6 @@ fn solve_stack(
                         if solved(&hallway, &rooms.0, &rooms.1, &rooms.2, &rooms.3) {
                             if res > cost {
                                 res = cost;
-                                //println!("update");
                             }
                             continue 'outer;
                         }
@@ -161,15 +158,9 @@ fn solve_stack(
                             if hallway[p] != '.' {
                                 break;
                             } else {
-                                /*println!(
-                                    "moving {} into the hallway (1), room pos {}",
-                                    c, room_pos
-                                );*/
                                 let mut hallway = hallway.clone();
                                 hallway[p] = c;
                                 let mut room = room.clone();
-                                //println!("room that will be changed: {:?}", room);
-                                //println!("changing pos {} to .", pos);
                                 room[pos] = '.';
                                 let rooms = match c_room {
                                     'A' => (room, room2.clone(), room3.clone(), room4.clone()),
@@ -178,13 +169,7 @@ fn solve_stack(
                                     'D' => (room1.clone(), room2.clone(), room3.clone(), room),
                                     _ => panic!("Invalid char {}", c),
                                 };
-                                let costs: usize = match c {
-                                    'A' => 1,
-                                    'B' => 10,
-                                    'C' => 100,
-                                    'D' => 1000,
-                                    _ => panic!("Invalid char {}", c),
-                                };
+                                let costs = costs(c);
                                 let new_cost = cost + costs * (pos + 1 + p - room_pos);
                                 if new_cost > res {
                                     continue;
@@ -230,13 +215,7 @@ fn solve_stack(
                                     'D' => (room1.clone(), room2.clone(), room3.clone(), room),
                                     _ => panic!("Invalid char {}", c),
                                 };
-                                let costs: usize = match c {
-                                    'A' => 1,
-                                    'B' => 10,
-                                    'C' => 100,
-                                    'D' => 1000,
-                                    _ => panic!("Invalid char {}", c),
-                                };
+                                let costs: usize = costs(c);
                                 let new_cost = cost + costs * (pos + 1 + room_pos - p);
                                 if new_cost > res {
                                     continue;
@@ -263,6 +242,16 @@ fn solve_stack(
     res
 }
 
+fn costs(c: char) -> usize {
+    match c {
+        'A' => 1,
+        'B' => 10,
+        'C' => 100,
+        'D' => 1000,
+        _ => panic!("Invalid char {}", c),
+    }
+}
+
 fn solved(
     hallway: &Vec<char>,
     room1: &Vec<char>,
@@ -275,12 +264,6 @@ fn solved(
         && room2.iter().all(|x| *x == 'B')
         && room3.iter().all(|x| *x == 'C')
         && room4.iter().all(|x| *x == 'D');
-    /*println!("---------------------");
-    println!("{:?}", hallway);
-    println!("{:?}", room1);
-    println!("{:?}", room2);
-    println!("{:?}", room3);
-    println!("{:?}", room4);*/
     return res;
 }
 
@@ -298,26 +281,18 @@ fn check_state(
         + room3.iter().filter(|x| **x != '.').count()
         + room4.iter().filter(|x| **x != '.').count();
 
-    let a_count = hallway.iter().filter(|x| **x == 'A').count()
-        + room1.iter().filter(|x| **x == 'A').count()
-        + room2.iter().filter(|x| **x == 'A').count()
-        + room3.iter().filter(|x| **x == 'A').count()
-        + room4.iter().filter(|x| **x == 'A').count();
-    let b_count = hallway.iter().filter(|x| **x == 'B').count()
-        + room1.iter().filter(|x| **x == 'B').count()
-        + room2.iter().filter(|x| **x == 'B').count()
-        + room3.iter().filter(|x| **x == 'B').count()
-        + room4.iter().filter(|x| **x == 'B').count();
-    let c_count = hallway.iter().filter(|x| **x == 'C').count()
-        + room1.iter().filter(|x| **x == 'C').count()
-        + room2.iter().filter(|x| **x == 'C').count()
-        + room3.iter().filter(|x| **x == 'C').count()
-        + room4.iter().filter(|x| **x == 'C').count();
-    let d_count = hallway.iter().filter(|x| **x == 'D').count()
-        + room1.iter().filter(|x| **x == 'D').count()
-        + room2.iter().filter(|x| **x == 'D').count()
-        + room3.iter().filter(|x| **x == 'D').count()
-        + room4.iter().filter(|x| **x == 'D').count();
+    let count = |c| {
+        hallway.iter().filter(|x| **x == c).count()
+            + room1.iter().filter(|x| **x == c).count()
+            + room2.iter().filter(|x| **x == c).count()
+            + room3.iter().filter(|x| **x == c).count()
+            + room4.iter().filter(|x| **x == c).count()
+    };
+
+    let a_count = count('A');
+    let b_count = count('B');
+    let c_count = count('C');
+    let d_count = count('D');
     if entries != 4 * room_size
         || a_count != room_size
         || b_count != room_size
