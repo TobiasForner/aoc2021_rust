@@ -376,7 +376,7 @@ pub fn part1(path: &str) -> Result<usize> {
     Ok(res)
 }
 
-pub fn part2(path: &str) -> Result<i32> {
+pub fn part2(_path: &str) -> Result<i32> {
     let result = 0;
 
     Ok(result)

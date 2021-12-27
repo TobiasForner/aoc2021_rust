@@ -1,7 +1,6 @@
 use anyhow::{Error, Result};
 
 use crate::util::read_to_vec;
-use std::collections::HashSet;
 use std::num::ParseIntError;
 use std::str::FromStr;
 
